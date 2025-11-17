@@ -1,0 +1,87 @@
+﻿<Window x:Class="GraphManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GraphManager"
+        mc:Ignorable="d"
+        Title="Graph Manager    0.0.1 (Beta)" Height="650" Width="800">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="19"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <Button Content="Файл" Height="19" Padding="5,1,5,2" BorderThickness="0" Background="{x:Null}"/>
+            <Button Content="Вид" Height="19" Padding="5,1,5,1" BorderThickness="0" Background="{x:Null}"/>
+            <Button Content="Настройки" Height="19" Padding="5,1,5,1" BorderThickness="0" Background="{x:Null}"/>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" 
+                      HorizontalScrollBarVisibility="Auto" 
+                      VerticalScrollBarVisibility="Auto">
+
+            <Grid Width="5000" Height="5000" Background="White"
+                  MouseLeftButtonDown="MainCanvas_MouseLeftButtonDown"
+                  MouseLeftButtonUp="CanvasArea_MouseLeftButtonUp"
+                  MouseMove="CanvasArea_MouseMove">
+
+                <ItemsControl ItemsSource="{Binding CurrentProject.Links}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Line X1="{Binding SourceBlock.X}" Y1="{Binding SourceBlock.Y}"
+                                  X2="{Binding TargetBlock.X}" Y2="{Binding TargetBlock.Y}"
+                                  Stroke="Gray" StrokeThickness="2"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <ItemsControl ItemsSource="{Binding CurrentProject.Blocks}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Canvas.Left" Value="{Binding X, Mode=TwoWay}"/>
+                            <Setter Property="Canvas.Top" Value="{Binding Y, Mode=TwoWay}"/>
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="LightBlue" BorderBrush="Navy" BorderThickness="2" 
+                                    CornerRadius="5" Width="150" Height="80" Padding="5"
+                                    MouseLeftButtonDown="Block_MouseLeftButtonDown">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Title}" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Details}" FontSize="10"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </ScrollViewer>
+
+        <StackPanel x:Name="ActionPanel" Grid.Row="1" 
+                    Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                    Width="46" Margin="10,0,0,0">
+
+            <Button Content="+" ToolTip="Создать" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetCreateCmd}"/>
+            <Button Content="-" ToolTip="Удалить" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetDeleteCmd}"/>
+            <Button Content="U" ToolTip="Обновить" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding LoadCmd}"/>
+            <Button Content="L" ToolTip="Связь" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetLinkCmd}"/>
+            <Button Content="H" ToolTip="Рука" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetSelectCmd}"/>
+            <Button Content="S" ToolTip="Сохранить" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SaveCmd}"/>
+        </StackPanel>
+
+    </Grid>
+</Window>

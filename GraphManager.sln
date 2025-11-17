@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphManager", "GraphManager.csproj", "{D1C23302-F3DC-4A48-AFDE-4B418DC5D176}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D1C23302-F3DC-4A48-AFDE-4B418DC5D176}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1C23302-F3DC-4A48-AFDE-4B418DC5D176}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1C23302-F3DC-4A48-AFDE-4B418DC5D176}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1C23302-F3DC-4A48-AFDE-4B418DC5D176}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {52CB89A3-B5C8-468C-91E2-79ED58B915E8}
+	EndGlobalSection
+EndGlobal
