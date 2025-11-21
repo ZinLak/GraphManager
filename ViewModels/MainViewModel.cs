@@ -71,7 +71,7 @@ namespace GraphManager.ViewModels
             CurrentProject.Blocks.Remove(block);
         }
 
-        // Этот метод отличный! Он вызывается из code-behind (MainWindow.xaml.cs)
+        // Вызывается из code-behind (MainWindow.xaml.cs)
         public void HandleBlockClick(TaskBlock clicked)
         {
             switch (CurrentTool)
@@ -119,17 +119,22 @@ namespace GraphManager.ViewModels
 
         public void DeleteLink(TaskLink link) => CurrentProject.Links.Remove(link);
 
-        // ВАЖНО: Этот метод требует, чтобы у TaskBlock были свойства Width и Height. Убедитесь, что они есть.
         public bool IsOverlapping(TaskBlock blockToCheck)
         {
-            // Убедитесь, что у TaskBlock есть Width и Height
-            var rect1 = new System.Windows.Rect(blockToCheck.X, blockToCheck.Y, 150, 80); // <--- Замените на реальные Width/Height
+            double width = 160;// <- Имеет реальные размеры блока TaskBlock
+            double height = 80;
+            double padding = 10; // Расстояние от блока до блока
+
+            var rect1 = new System.Windows.Rect(blockToCheck.X - padding, 
+                                                blockToCheck.Y - padding, 
+                                                width + padding * 2, 
+                                                height + padding * 2); 
 
             // ИСПРАВЛЕНО: Используем CurrentProject
             foreach (var other in CurrentProject.Blocks)
             {
                 if (other.Id == blockToCheck.Id) continue;
-                var rect2 = new System.Windows.Rect(other.X, other.Y, 150, 80); // <--- Замените на реальные Width/Height
+                var rect2 = new System.Windows.Rect(other.X, other.Y, width, height);
                 if (rect1.IntersectsWith(rect2)) return true;
             }
             return false;

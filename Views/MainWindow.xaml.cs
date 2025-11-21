@@ -16,6 +16,7 @@ namespace GraphManager
         private Point _clickOffset; // Смещение клика от угла блока
         private TaskBlock _draggedBlock; // Блок, который тащим
         private MainViewModel _viewModel;
+        private Point _originalPosition;
 
         public MainWindow()
         {
@@ -46,6 +47,8 @@ namespace GraphManager
                 _draggedBlock = clickedBlock;
                 _isDragging = true;
                 _clickOffset = e.GetPosition(border);
+                _originalPosition = new Point(_draggedBlock.X, _draggedBlock.Y);
+
                 border.CaptureMouse();
             }
             e.Handled = true;
@@ -65,18 +68,32 @@ namespace GraphManager
                 _draggedBlock.X = currentPosition.X - _clickOffset.X;
                 _draggedBlock.Y = currentPosition.Y - _clickOffset.Y;
 
-                // Позже можно добавить проверку на пересечение _viewModel.IsOverlapping
+                // Позже можно добавить проверку на пересечение _viewModel.IsOverlapping (ГОТОВО)
             }
         }
 
         // 3. Конец перетаскивания (Отпускаем кнопку)
         private void CanvasArea_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (_isDragging)
+            if (_isDragging && _draggedBlock != null)
             {
+                bool isOverlapped = _viewModel.IsOverlapping(_draggedBlock);
+                if (isOverlapped)
+                {
+                    _draggedBlock.X = _originalPosition.X;
+                    _draggedBlock.Y = _originalPosition.Y;
+                    // Можно будет добавить звук ошибки или массаж бокс.
+                }
                 _isDragging = false;
                 _draggedBlock = null;
-                // Освобождаем мышь
+                Mouse.Capture(null);
+            }
+            if (_isDragging) 
+            {
+                // условие для подстраховки (оно не обязательно,
+                // но если вдруг draggedBlock стал null, а флаг перетаскивания true (маловероятно))
+                _isDragging = false;
+                _draggedBlock = null;
                 Mouse.Capture(null);
             }
         }
