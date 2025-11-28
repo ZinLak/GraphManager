@@ -77,21 +77,10 @@ namespace GraphManager
         {
             if (_isDragging && _draggedBlock != null)
             {
-                bool isOverlapped = _viewModel.IsOverlapping(_draggedBlock);
-                if (isOverlapped)
-                {
-                    _draggedBlock.X = _originalPosition.X;
-                    _draggedBlock.Y = _originalPosition.Y;
-                    // Можно будет добавить звук ошибки или массаж бокс.
-                }
-                _isDragging = false;
-                _draggedBlock = null;
-                Mouse.Capture(null);
+                _viewModel.ResolveCollision(_draggedBlock);
             }
             if (_isDragging) 
             {
-                // условие для подстраховки (оно не обязательно,
-                // но если вдруг draggedBlock стал null, а флаг перетаскивания true (маловероятно))
                 _isDragging = false;
                 _draggedBlock = null;
                 Mouse.Capture(null);

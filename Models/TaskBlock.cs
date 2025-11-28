@@ -14,7 +14,7 @@ namespace GraphManager.Models
         private string _title = "Новая задача";
         private string _details;
         private bool _isComplated;
-        private double _width = 160;
+        private double _width = 150;
         private double _height = 80;
 
         public string Id { get; set; } = Guid.NewGuid().ToString();

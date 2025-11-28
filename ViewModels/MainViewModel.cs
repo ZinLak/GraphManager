@@ -119,6 +119,68 @@ namespace GraphManager.ViewModels
 
         public void DeleteLink(TaskLink link) => CurrentProject.Links.Remove(link);
 
+        public void ResolveCollision(TaskBlock movedBlock)
+        {
+            double mWidth = movedBlock.Width;
+            double mHeight = movedBlock.Height;
+            double padding = 20;
+
+            var rect1 = new System.Windows.Rect(movedBlock.X, movedBlock.Y, mWidth, mHeight);
+
+            foreach (var other in CurrentProject.Blocks)
+            {
+                if (other.Id == movedBlock.Id) continue;
+
+                double oWidth = other.Width;
+                double oHeight = other.Height;
+
+                var rect2 = new System.Windows.Rect(other.X, other.Y, mWidth, mHeight);
+
+                if (rect1.IntersectsWith(rect2))
+                {
+                    double center1_X = movedBlock.X + (mWidth / 2);
+                    double center1_Y = movedBlock.Y + (mHeight / 2);
+
+                    double center2_X = other.X + (oWidth / 2);
+                    double center2_Y = other.Y + (oHeight / 2);
+
+                    double dx = center1_X - center2_X;
+                    double dy = center1_Y - center2_Y;
+
+                    double minTouchDistX = (mWidth / 2) + (oWidth / 2);
+                    double minTouchDistY = (mHeight / 2) + (oHeight / 2);
+
+                    double overlapX = minTouchDistX - Math.Abs(dx);
+                    double overlapY = minTouchDistY - Math.Abs(dy);
+
+                    if (overlapX < 0) overlapX = 0;
+                    if (overlapY < 0) overlapY = 0;
+
+                    //if (overlapX <= 0 || overlapY <= 0) continue; Выдает баги. По центру определяется
+
+                    if (overlapX < overlapY)
+                    {
+                        if (dx > 0)
+                            movedBlock.X = other.X + oWidth + padding;
+                        else
+                            movedBlock.X = other.X - mWidth - padding;
+                    }
+                    else
+                    {
+                        if (dy > 0)
+                            movedBlock.Y = other.Y + oHeight + padding;
+                        else
+                            movedBlock.Y = other.Y - mHeight - padding;
+                    }
+
+                    // Мы разрешили коллизию с одним блоком. 
+                    // В идеале нужно проверять снова (вдруг мы отскочили в третий блок?),
+                    // но для MVP достаточно вытолкнуть один раз.
+                    return;
+                }
+            }
+        }
+
         public bool IsOverlapping(TaskBlock blockToCheck)
         {
             double width = 160;// <- Имеет реальные размеры блока TaskBlock
