@@ -58,7 +58,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border Background="LightBlue" BorderBrush="Navy" BorderThickness="2" 
-                                    CornerRadius="5" Width="150" Height="80" Padding="5"
+                                    CornerRadius="5" Width="{Binding Width}" Height="{Binding Height}" Padding="5"
                                     MouseLeftButtonDown="Block_MouseLeftButtonDown">
                                 <StackPanel>
                                     <TextBlock Text="{Binding Title}" FontWeight="Bold"/>
