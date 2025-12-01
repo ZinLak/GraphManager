@@ -85,6 +85,7 @@ namespace GraphManager
                 {
                     _draggedBlock.X = _originalPosition.X;
                     _draggedBlock.Y = _originalPosition.Y;
+                    MessageBox.Show("В этом месте невозможно разместить блок!");
                 }
             }
 
@@ -104,9 +105,15 @@ namespace GraphManager
             if (_viewModel.CurrentTool == Enums.ToolMode.Create)
             {
                 var position = e.GetPosition((IInputElement)sender);
-                _viewModel.CreateBlockAt(position.X, position.Y);
+                var newBlock = _viewModel.CreateBlockAt(position.X, position.Y);
                 // Сбрасываем режим, чтобы не создавать блоки по новому клику
                 _viewModel.CurrentTool = Enums.ToolMode.Select;
+                bool success = _viewModel.ResolveCollision(newBlock);
+                if (!success)
+                {
+                    _viewModel.DeleteBlock(newBlock);
+                    MessageBox.Show("В этом месте невозможно создать блок!");
+                }
             }
         }
     }

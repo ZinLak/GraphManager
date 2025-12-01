@@ -173,7 +173,7 @@ namespace GraphManager.ViewModels
                 if (overlapX < 0) overlapX = 0;
                 if (overlapY < 0) overlapY = 0;
 
-                double padding = 20;
+                double padding = 5;
 
                 if (overlapX < overlapY)
                 {
