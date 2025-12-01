@@ -77,9 +77,19 @@ namespace GraphManager
         {
             if (_isDragging && _draggedBlock != null)
             {
-                _viewModel.ResolveCollision(_draggedBlock);
+                // Пытаемся найти место
+                bool success = _viewModel.ResolveCollision(_draggedBlock);
+
+                // Если места нет — возвращаем на базу
+                if (!success)
+                {
+                    _draggedBlock.X = _originalPosition.X;
+                    _draggedBlock.Y = _originalPosition.Y;
+                }
             }
-            if (_isDragging) 
+
+            // Очистка
+            if (_isDragging)
             {
                 _isDragging = false;
                 _draggedBlock = null;
