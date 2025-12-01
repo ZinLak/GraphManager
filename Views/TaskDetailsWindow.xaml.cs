@@ -1,27 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GraphManager.Models;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
-namespace GraphManager.Views
+namespace GraphManager
 {
-    /// <summary>
-    /// Логика взаимодействия для TaskDetailsWindow.xaml
-    /// </summary>
     public partial class TaskDetailsWindow : Window
     {
-        public TaskDetailsWindow()
+        public TaskDetailsWindow(TaskBlock block)
         {
             InitializeComponent();
+            // Устанавливаем блок как DataContext. 
+            // Это позволяет окну напрямую редактировать свойства блока.
+            this.DataContext = block;
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

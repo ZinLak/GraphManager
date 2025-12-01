@@ -70,6 +70,7 @@ namespace GraphManager.ViewModels
             var linksToRemove = CurrentProject.Links.Where(l => l.SourceBlockId == block.Id || l.TargetBlockId == block.Id).ToList();
             foreach (var link in linksToRemove) CurrentProject.Links.Remove(link);
             CurrentProject.Blocks.Remove(block);
+            CurrentTool = ToolMode.Select;
         }
 
         // Вызывается из code-behind (MainWindow.xaml.cs)

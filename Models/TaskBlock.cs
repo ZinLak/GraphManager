@@ -12,8 +12,8 @@ namespace GraphManager.Models
         private double _y;
         private double _x;
         private string _title = "Новая задача";
-        private string _details;
-        private bool _isComplated;
+        private string _details = "Нажмите дважды для редактирования деталей...";
+        private bool _isCompleted = false;
         private double _width = 150;
         private double _height = 80;
 
@@ -27,7 +27,7 @@ namespace GraphManager.Models
         public double Height { get => _height; set { _height = value; OnPropertyChanged(nameof(Height)); } }
 
         public string Details { get => _details; set { _details = value; OnPropertyChanged(nameof(Details)); } }
-        public bool IsComplated { get => _isComplated; set { _isComplated = value; OnPropertyChanged(nameof(IsComplated)); } }
+        public bool IsCompleted { get => _isCompleted; set { _isCompleted = value; OnPropertyChanged(nameof(IsCompleted)); } }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)

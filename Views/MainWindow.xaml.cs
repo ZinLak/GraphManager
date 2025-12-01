@@ -38,6 +38,15 @@ namespace GraphManager
 
             if (clickedBlock == null) return;
 
+            if (e.ClickCount == 2)
+            {
+                var detailsWindow = new TaskDetailsWindow(clickedBlock);
+                detailsWindow.ShowDialog();
+
+                e.Handled = true;
+                return;
+            }
+
             _viewModel.HandleBlockClick(clickedBlock);
 
             _draggedBlock = border.DataContext as TaskBlock; // Получаем объект данных
