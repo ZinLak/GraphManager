@@ -3,10 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:GraphManager.ViewModels"
         xmlns:local="clr-namespace:GraphManager"
+        xmlns:conv="clr-namespace:GraphManager.Converters"
         mc:Ignorable="d"
         Title="Graph Manager    v 0.2 (Beta)" Height="650" Width="800">
 
+    <Window.Resources>
+        <conv:BlockCenterConverter x:Key="CenterConverter"/>
+    </Window.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="19"/>
@@ -36,9 +42,35 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Line X1="{Binding SourceBlock.X}" Y1="{Binding SourceBlock.Y}"
-                                  X2="{Binding TargetBlock.X}" Y2="{Binding TargetBlock.Y}"
-                                  Stroke="Gray" StrokeThickness="2"/>
+                            <Line Stroke="Gray" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                                <Line.X1>
+                                    <MultiBinding Converter="{StaticResource CenterConverter}">
+                                        <Binding Path="SourceBlock.X" />
+                                        <Binding Path="SourceBlock.Width" />
+                                    </MultiBinding>
+                                </Line.X1>
+
+                                <Line.Y1>
+                                    <MultiBinding Converter="{StaticResource CenterConverter}">
+                                        <Binding Path="SourceBlock.Y" />
+                                        <Binding Path="SourceBlock.Height" />
+                                    </MultiBinding>
+                                </Line.Y1>
+
+                                <Line.X2>
+                                    <MultiBinding Converter="{StaticResource CenterConverter}">
+                                        <Binding Path="TargetBlock.X" />
+                                        <Binding Path="TargetBlock.Width" />
+                                    </MultiBinding>
+                                </Line.X2>
+
+                                <Line.Y2>
+                                    <MultiBinding Converter="{StaticResource CenterConverter}">
+                                        <Binding Path="TargetBlock.Y" />
+                                        <Binding Path="TargetBlock.Height" />
+                                    </MultiBinding>
+                                </Line.Y2>
+                            </Line>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

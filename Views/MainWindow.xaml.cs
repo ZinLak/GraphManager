@@ -6,10 +6,6 @@ using System.Windows.Controls;
 
 namespace GraphManager
 {
-
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private bool _isDragging = false;
@@ -49,7 +45,7 @@ namespace GraphManager
 
             _viewModel.HandleBlockClick(clickedBlock);
 
-            _draggedBlock = border.DataContext as TaskBlock; // Получаем объект данных
+            _draggedBlock = border.DataContext as TaskBlock;
 
             if (_viewModel.CurrentTool == Enums.ToolMode.Select)
             {
@@ -68,16 +64,11 @@ namespace GraphManager
         {
             if (_isDragging && _draggedBlock != null)
             {
-                // Получаем текущие координаты мыши относительно основного контейнера
                 var canvas = sender as IInputElement;
                 Point currentPosition = e.GetPosition(canvas);
 
-                // Обновляем координаты в ViewModel (TaskBlock)
-                // Благодаря TwoWay Binding в XAML, блок на экране тоже сдвинется!
                 _draggedBlock.X = currentPosition.X - _clickOffset.X;
                 _draggedBlock.Y = currentPosition.Y - _clickOffset.Y;
-
-                // Позже можно добавить проверку на пересечение _viewModel.IsOverlapping (ГОТОВО)
             }
         }
 
@@ -94,7 +85,10 @@ namespace GraphManager
                 {
                     _draggedBlock.X = _originalPosition.X;
                     _draggedBlock.Y = _originalPosition.Y;
-                    MessageBox.Show("В этом месте невозможно разместить блок!");
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        MessageBox.Show("В этом месте невозможно разместить блок!");
+                    }), System.Windows.Threading.DispatcherPriority.ContextIdle);
                 }
             }
 
@@ -107,7 +101,7 @@ namespace GraphManager
             }
         }
 
-        // 4. Клик по пустому канвасу)
+        // 4. Клик по пустому канвасу
         private void MainCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (_viewModel == null) return;
@@ -115,13 +109,15 @@ namespace GraphManager
             {
                 var position = e.GetPosition((IInputElement)sender);
                 var newBlock = _viewModel.CreateBlockAt(position.X, position.Y);
-                // Сбрасываем режим, чтобы не создавать блоки по новому клику
                 _viewModel.CurrentTool = Enums.ToolMode.Select;
                 bool success = _viewModel.ResolveCollision(newBlock);
                 if (!success)
                 {
                     _viewModel.DeleteBlock(newBlock);
-                    MessageBox.Show("В этом месте невозможно создать блок!");
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        MessageBox.Show("В этом месте невозможно создать блок!");
+                    }), System.Windows.Threading.DispatcherPriority.ContextIdle);
                 }
             }
         }
