@@ -13,16 +13,25 @@
         <conv:BlockCenterConverter x:Key="CenterConverter"/>
     </Window.Resources>
     
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Control" Key="Z" Command="{Binding UndoCmd}" />
+        <KeyBinding Modifiers="Control" Key="Y" Command="{Binding RedoCmd}" />
+    </Window.InputBindings>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="19"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-            <Button Content="Файл" Height="19" Padding="5,1,5,2" BorderThickness="0" Background="{x:Null}"/>
-            <Button Content="Вид" Height="19" Padding="5,1,5,1" BorderThickness="0" Background="{x:Null}"/>
-            <Button Content="Настройки" Height="19" Padding="5,1,5,1" BorderThickness="0" Background="{x:Null}"/>
+            <Menu Background="{x:Null}">
+                <MenuItem MouseEnter="MenuItem_MouseEnter" MouseLeave="MenuItem_MouseLeave" Header="Файл" Height="19" Padding="5,1,5,2" BorderThickness="0" Background="{x:Null}">
+                    <MenuItem Header="Сохранить" Command="{Binding SaveCmd}"/>
+                    <MenuItem Header="Открыть" Command="{Binding LoadCmd}"/>
+                </MenuItem>
+                <MenuItem Header="Вид" Height="19" Padding="5,1,5,1" BorderThickness="0" Background="{x:Null}"/>
+                <MenuItem Header="Настройки" Height="19" Padding="5,1,5,1" BorderThickness="0" Background="{x:Null}"/>
+            </Menu>
         </StackPanel>
 
         <ScrollViewer Grid.Row="1" 
@@ -109,10 +118,12 @@
 
             <Button Content="+" ToolTip="Создать" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetCreateCmd}"/>
             <Button Content="-" ToolTip="Удалить" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetDeleteCmd}"/>
-            <Button Content="U" ToolTip="Загрузить" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding LoadCmd}"/>
             <Button Content="L" ToolTip="Связь" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetLinkCmd}"/>
             <Button Content="H" ToolTip="Рука" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetSelectCmd}"/>
-            <Button Content="S" ToolTip="Сохранить" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SaveCmd}"/>
+            <Button Content="↩" ToolTip="Отменить (Undo)" Width="42" Height="42" Margin="0,2,0,0" 
+                Command="{Binding UndoCmd}"/>
+            <Button Content="↪" ToolTip="Повторить (Redo)" Width="42" Height="42" Margin="0,2,0,0" 
+                Command="{Binding RedoCmd}"/>
         </StackPanel>
 
     </Grid>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Input;
 
 namespace GraphManager.ViewModels
@@ -23,10 +24,22 @@ namespace GraphManager.ViewModels
         // Проверяем можно ли выполнить команду
         public bool CanExecute(object? parameter)
         {
-            if (_canExecute == null)
-                return true;
+            //if (_canExecute == null)
+            //    return true;
 
-            return _canExecute(parameter);
+            //return _canExecute(parameter);
+            try
+            {
+                if (_canExecute == null)
+                    return true;
+
+                return _canExecute(parameter);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("CanExecute ERROR: " + ex.Message);
+                return false;
+            }
         }
 
         // Выполнение команды

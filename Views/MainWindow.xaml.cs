@@ -3,6 +3,7 @@ using GraphManager.Models;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
+using GraphManager.Commands;
 
 namespace GraphManager
 {
@@ -23,7 +24,18 @@ namespace GraphManager
                 _viewModel = this.DataContext as MainViewModel;
             };
         }
-
+        private void MenuItem_MouseEnter(object sender, MouseEventArgs e)
+        {
+            var item = sender as MenuItem;
+            if (item != null)
+                item.IsSubmenuOpen = true;
+        }
+        private void MenuItem_MouseLeave(object sender, MouseEventArgs e)
+        {
+            var item = sender as MenuItem;
+            if (item != null)
+                item.IsSubmenuOpen = false;
+        }
         // 1. Начало перетаскивания (Клик по блоку)
         private void Block_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -89,6 +101,20 @@ namespace GraphManager
                     {
                         MessageBox.Show("В этом месте невозможно разместить блок!");
                     }), System.Windows.Threading.DispatcherPriority.ContextIdle);
+                }
+                else
+                {
+                    if (_draggedBlock.X != _originalPosition.X || _draggedBlock.Y != _originalPosition.Y)
+                    {
+                        var cmd = new MoveBlockCommand(
+                            _draggedBlock,
+                            _originalPosition.X,
+                            _originalPosition.Y,
+                            _draggedBlock.X,
+                            _draggedBlock.Y
+                        );
+                        _viewModel.History.AddAndExecute( cmd );
+                    }
                 }
             }
 

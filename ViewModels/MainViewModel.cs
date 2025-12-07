@@ -7,6 +7,7 @@ using Microsoft.Win32; // Для Open/Save Dialog
 using Newtonsoft.Json;
 using GraphManager.Enums;
 using GraphManager.Models;
+using GraphManager.Commands;
 using System.Runtime.CompilerServices;
 
 namespace GraphManager.ViewModels
@@ -32,6 +33,8 @@ namespace GraphManager.ViewModels
 
         private TaskBlock _linkSource; // Для создания связей
 
+        public CommandHistory History { get; } = new CommandHistory();
+
         // 2. КОМАНДЫ (Привязка к кнопкам в XAML)
         public ICommand SetCreateCmd => new RelayCommand(_ => CurrentTool = ToolMode.Create);
         public ICommand SetSelectCmd => new RelayCommand(_ => CurrentTool = ToolMode.Select);
@@ -40,6 +43,9 @@ namespace GraphManager.ViewModels
 
         public ICommand LoadCmd { get; }
         public ICommand SaveCmd { get; }
+
+        public ICommand UndoCmd => new RelayCommand(_ => History.Undo());
+        public ICommand RedoCmd => new RelayCommand(_ => History.Redo());
 
         public MainViewModel()
         {
@@ -55,16 +61,20 @@ namespace GraphManager.ViewModels
         public TaskBlock CreateBlockAt(double x, double y)
         {
             var b = new TaskBlock { X = x, Y = y };
-            CurrentProject.Blocks.Add(b);
+            //CurrentProject.Blocks.Add(b);
+            var command = new CreateBlockCommand(CurrentProject.Blocks, b);
+            History.AddAndExecute(command);
             return b;
         }
 
         public void DeleteBlock(TaskBlock block)
         {
             if (block == null) return;
-            var linksToRemove = CurrentProject.Links.Where(l => l.SourceBlockId == block.Id || l.TargetBlockId == block.Id).ToList();
-            foreach (var link in linksToRemove) CurrentProject.Links.Remove(link);
-            CurrentProject.Blocks.Remove(block);
+            var cmd = new DeleteBlockCommand(CurrentProject.Blocks, CurrentProject.Links, block);
+            History.AddAndExecute(cmd);
+            //var linksToRemove = CurrentProject.Links.Where(l => l.SourceBlockId == block.Id || l.TargetBlockId == block.Id).ToList();
+            //foreach (var link in linksToRemove) CurrentProject.Links.Remove(link);
+            //CurrentProject.Blocks.Remove(block);
             CurrentTool = ToolMode.Select;
         }
 
@@ -98,7 +108,9 @@ namespace GraphManager.ViewModels
                                     SourceBlock = _linkSource,
                                     TargetBlock = clicked
                                 };
-                                CurrentProject.Links.Add(newLink);
+                                //CurrentProject.Links.Add(newLink);
+                                var cmd = new CreateLinkCommand(CurrentProject.Links, newLink);
+                                History.AddAndExecute(cmd);
                             }
                         }
                         _linkSource = null;
