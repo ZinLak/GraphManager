@@ -6,18 +6,31 @@
         xmlns:vm="clr-namespace:GraphManager.ViewModels"
         xmlns:local="clr-namespace:GraphManager"
         xmlns:conv="clr-namespace:GraphManager.Converters"
+        xmlns:enums="clr-namespace:GraphManager.Enums"
         mc:Ignorable="d"
-        Title="Graph Manager    v 0.2 (Beta)" Height="650" Width="800">
+        Title="Graph Manager    v 0.3 (Beta)" Height="650" Width="800" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <conv:BlockCenterConverter x:Key="CenterConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <Style x:Key="ToolButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="42"/>
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Margin" Value="0,2,0,0"/>
+            <Setter Property="Background" Value="LightGray"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
     
     <Window.InputBindings>
         <KeyBinding Modifiers="Control" Key="Z" Command="{Binding UndoCmd}" />
         <KeyBinding Modifiers="Control" Key="Y" Command="{Binding RedoCmd}" />
     </Window.InputBindings>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="19"/>
@@ -116,15 +129,108 @@
                     Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" 
                     Width="46" Margin="10,0,0,0">
 
-            <Button Content="+" ToolTip="Создать" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetCreateCmd}"/>
-            <Button Content="-" ToolTip="Удалить" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetDeleteCmd}"/>
-            <Button Content="L" ToolTip="Связь" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetLinkCmd}"/>
-            <Button Content="H" ToolTip="Рука" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetSelectCmd}"/>
+            <Button Content="+" ToolTip="Создать" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetCreateCmd}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ToolButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CurrentTool}" Value="{x:Static enums:ToolMode.Create}">
+                                <Setter Property="Background" Value="LightGreen"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button Content="-" ToolTip="Удалить" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetDeleteCmd}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ToolButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CurrentTool}" Value="{x:Static enums:ToolMode.Delete}">
+                                <Setter Property="Background" Value="Salmon"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button Content="L" ToolTip="Связь" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetLinkCmd}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ToolButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CurrentTool}" Value="{x:Static enums:ToolMode.Link}">
+                                <Setter Property="Background" Value="Gold"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button Content="H" ToolTip="Рука" Width="42" Height="42" Margin="0,2,0,0" Command="{Binding SetSelectCmd}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ToolButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CurrentTool}" Value="{x:Static enums:ToolMode.Select}">
+                                <Setter Property="Background" Value="LightSkyBlue"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
             <Button Content="↩" ToolTip="Отменить (Undo)" Width="42" Height="42" Margin="0,2,0,0" 
                 Command="{Binding UndoCmd}"/>
             <Button Content="↪" ToolTip="Повторить (Redo)" Width="42" Height="42" Margin="0,2,0,0" 
                 Command="{Binding RedoCmd}"/>
         </StackPanel>
+        <Border HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Grid.Row="0"          
+            Grid.RowSpan="2"       Margin="20"
+            Padding="15"
+            Background="#333333"
+            CornerRadius="8"
+            MaxWidth="300"
+            Panel.ZIndex="9999">
 
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentNotification.IsVisible}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                        
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="{Binding CurrentNotification.Message}" 
+                       Foreground="White" 
+                       TextWrapping="Wrap"
+                       FontSize="14"
+                       Grid.Column="0"/>
+
+                <Button Content="✕" 
+                    Command="{Binding CloseNotificationCommand}"
+                    Grid.Column="1"
+                    Foreground="LightGray"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Margin="10,-5,-5,0"
+                    FontWeight="Bold"
+                    Cursor="Hand"/>
+            </Grid>
+
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.5"/>
+            </Border.Effect>
+        </Border>
     </Grid>
 </Window>

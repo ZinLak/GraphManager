@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows.Input;
-using System.IO;
-using Microsoft.Win32; // Для Open/Save Dialog
-using Newtonsoft.Json;
+﻿using GraphManager.Commands;
 using GraphManager.Enums;
 using GraphManager.Models;
-using GraphManager.Commands;
+using Microsoft.Win32; // Для Open/Save Dialog
+using Newtonsoft.Json;
+using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace GraphManager.ViewModels
 {
@@ -34,6 +35,13 @@ namespace GraphManager.ViewModels
         private TaskBlock _linkSource; // Для создания связей
 
         public CommandHistory History { get; } = new CommandHistory();
+
+        private Notification _currentNotification;
+        public Notification CurrentNotification
+        {
+            get => _currentNotification;
+            set { _currentNotification = value; OnPropertyChanged(); }
+        }
 
         // 2. КОМАНДЫ (Привязка к кнопкам в XAML)
         public ICommand SetCreateCmd => new RelayCommand(_ => CurrentTool = ToolMode.Create);
@@ -195,6 +203,29 @@ namespace GraphManager.ViewModels
             }
             return false;
         }
+
+        public async void ShowNotification(string message, int durationSeconds = 3)
+        {
+            // 1. Создаем новое уведомление
+            var notif = new Notification(message);
+            CurrentNotification = notif; // Уведомляем UI
+
+            // 2. Ждем (асинхронно, не блокируя UI)
+            await Task.Delay(TimeSpan.FromSeconds(durationSeconds));
+
+            // 3. Скрываем (если это всё еще то же самое уведомление)
+            if (CurrentNotification == notif)
+            {
+                CurrentNotification.IsVisible = false;
+            }
+        }
+
+        // Команда закрытия (крестик)
+        public ICommand CloseNotificationCommand => new RelayCommand(_ =>
+        {
+            if (CurrentNotification != null)
+                CurrentNotification.IsVisible = false;
+        });
 
         // 4. ЛОГИКА ФАЙЛОВ (Сохранение и Загрузка)
 

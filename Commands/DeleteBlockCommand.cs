@@ -12,14 +12,19 @@ namespace GraphManager.Commands
         private readonly ObservableCollection<TaskBlock> _blockCollection;
         private readonly ObservableCollection<TaskLink> _linkCollection;
         private readonly TaskBlock _blockToDelete;
-
         private List<TaskLink> _deleteLinks;
+
+        private readonly double _savedX;
+        private readonly double _savedY;
 
         public DeleteBlockCommand(ObservableCollection<TaskBlock> blocks, ObservableCollection<TaskLink> link, TaskBlock block)
         {
             _blockCollection = blocks;
             _linkCollection = link;
             _blockToDelete = block;
+
+            _savedX = block.X;
+            _savedY = block.Y;
         }
 
         public void Execute()
@@ -35,6 +40,8 @@ namespace GraphManager.Commands
 
         public void UnExecute()
         {
+            _blockToDelete.X = _savedX;
+            _blockToDelete.Y = _savedY;
             _blockCollection.Add(_blockToDelete);
 
             foreach (var link in _deleteLinks)

@@ -39,5 +39,10 @@ namespace GraphManager.Commands
                 _undoStack.Push(command);
             }
         }
+
+        public void DiscardLastUndo()
+        {
+            if (_undoStack.Count > 0) { _undoStack.Pop(); }
+        }
     }
 }

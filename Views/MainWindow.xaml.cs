@@ -1,9 +1,10 @@
-﻿using GraphManager.ViewModels;
+﻿using GraphManager.Commands;
 using GraphManager.Models;
+using GraphManager.ViewModels;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Controls;
-using GraphManager.Commands;
+using System.Windows.Documents;
+using System.Windows.Input;
 
 namespace GraphManager
 {
@@ -57,6 +58,12 @@ namespace GraphManager
 
             _viewModel.HandleBlockClick(clickedBlock);
 
+            if (_viewModel.CurrentTool == Enums.ToolMode.Delete || _viewModel.CurrentTool == Enums.ToolMode.Link)
+            {
+                e.Handled = true;
+                return;
+            }
+            
             _draggedBlock = border.DataContext as TaskBlock;
 
             if (_viewModel.CurrentTool == Enums.ToolMode.Select)
@@ -89,6 +96,14 @@ namespace GraphManager
         {
             if (_isDragging && _draggedBlock != null)
             {
+                if (!_viewModel.CurrentProject.Blocks.Contains(_draggedBlock))
+                {
+                    _isDragging = false;
+                    _draggedBlock = null;
+                    Mouse.Capture(null);
+                    return;
+                }
+
                 // Пытаемся найти место
                 bool success = _viewModel.ResolveCollision(_draggedBlock);
 
@@ -97,14 +112,13 @@ namespace GraphManager
                 {
                     _draggedBlock.X = _originalPosition.X;
                     _draggedBlock.Y = _originalPosition.Y;
-                    Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        MessageBox.Show("В этом месте невозможно разместить блок!");
-                    }), System.Windows.Threading.DispatcherPriority.ContextIdle);
+                    
+                    _viewModel.ShowNotification("В этом месте невозможно разместить блок!", 5);
+                    
                 }
                 else
                 {
-                    if (_draggedBlock.X != _originalPosition.X || _draggedBlock.Y != _originalPosition.Y)
+                    if (Math.Abs(_draggedBlock.X - _originalPosition.X) > 1 || Math.Abs(_draggedBlock.Y - _originalPosition.Y) > 1)
                     {
                         var cmd = new MoveBlockCommand(
                             _draggedBlock,
@@ -139,11 +153,14 @@ namespace GraphManager
                 bool success = _viewModel.ResolveCollision(newBlock);
                 if (!success)
                 {
-                    _viewModel.DeleteBlock(newBlock);
+                    //_viewModel.DeleteBlock(newBlock);
+                    _viewModel.CurrentProject.Blocks.Remove(newBlock);
+                    _viewModel.History.DiscardLastUndo();
                     Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        MessageBox.Show("В этом месте невозможно создать блок!");
-                    }), System.Windows.Threading.DispatcherPriority.ContextIdle);
+                        //MessageBox.Show("В этом месте невозможно создать блок!");
+                        _viewModel.ShowNotification("В этом месте невозможно создать блок!", 5);
+                    }), System.Windows.Threading.DispatcherPriority.Normal);
                 }
             }
         }
